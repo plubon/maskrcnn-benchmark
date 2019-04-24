@@ -7,13 +7,17 @@ maskrcnn_benchmark.egg-info/
 build/
 dist/
 
+# Training files
+log.txt
+last_checkpoint
+
 # pytorch/python/numpy formats
 *.pth
 *.pkl
 *.npy
 
 # ipython/jupyter notebooks
-*.ipynb
+#*.ipynb
 **/.ipynb_checkpoints/
 
 # Editor temporaries
@@ -24,7 +28,10 @@ dist/
 
 # Pycharm editor settings
 .idea
+.vscode
 
 # project dirs
 /datasets
 /models
+/weights
+/chata_results

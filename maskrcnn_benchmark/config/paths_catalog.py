@@ -120,6 +120,22 @@ class DatasetCatalog(object):
             "data_dir": "chata/charts",
             "split": "trainval"
         },
+        "tables_train": {
+            "data_dir": "chata/tables",
+            "split": "train"
+        },
+        "tables_test": {
+            "data_dir": "chata/tables",
+            "split": "test"
+        },
+        "tables_val": {
+            "data_dir": "chata/tables",
+            "split": "val"
+        },
+        "tables_trainval": {
+            "data_dir": "chata/tables",
+            "split": "trainval"
+        },
     }
 
     @staticmethod
@@ -155,6 +171,17 @@ class DatasetCatalog(object):
             )
             return dict(
                 factory="ChartsDataset",
+                args=args,
+            ) 
+        elif "tables" in name:
+            data_dir = DatasetCatalog.DATA_DIR
+            attrs = DatasetCatalog.DATASETS[name]
+            args = dict(
+                data_dir=os.path.join(data_dir, attrs["data_dir"]),
+                split=attrs["split"],
+            )
+            return dict(
+                factory="TablesDataset",
                 args=args,
             )
         raise RuntimeError("Dataset not available: {}".format(name))

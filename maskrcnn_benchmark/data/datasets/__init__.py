@@ -2,6 +2,6 @@
 from .coco import COCODataset
 from .voc import PascalVOCDataset
 from .concat_dataset import ConcatDataset
-from .chata import ChartsDataset
+from .chata import ChartsDataset, TablesDataset
 
-__all__ = ["COCODataset", "ConcatDataset", "PascalVOCDataset", "ChartsDataset"]
+__all__ = ["COCODataset", "ConcatDataset", "PascalVOCDataset", "ChartsDataset", "TablesDataset"]
