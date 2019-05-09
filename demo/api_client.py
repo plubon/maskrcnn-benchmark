@@ -3,8 +3,8 @@ import json
 
 class ApiClient():
 
-    username = 'extract'
-    pwd  = 'extract12'
+    username = 'auto-annotator-3000'
+    pwd  = 'beets-bears-battlestar-galactica'
 
     def __init__(self, url='http://3.120.235.67/api'):
         self.base_url = url

@@ -15,8 +15,8 @@ def main():
     pages = client.get_pages(latest_id)
     for id, url in pages:
         resp = urllib.urlopen(url)
-	    image = np.asarray(bytearray(resp.read()), dtype="uint8")
-	    image = cv2.imdecode(image, cv2.IMREAD_COLOR)
+        image = np.asarray(bytearray(resp.read()), dtype="uint8")
+        image = cv2.imdecode(image, cv2.IMREAD_COLOR)
         predictions = model.get_predictions(image)
         objects = []
         for label, xmin, ymin, xmax, ymax in predictions:
@@ -25,8 +25,8 @@ def main():
                 'x1':xmin,
                 'y1':ymin,
                 'x2':xmax,
-                'y2':ymax
-                'text':''
+                'y2':ymax,
+                'text':'',
                 'subRegions':[]
             }
             objects.append(data)
