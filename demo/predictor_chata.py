@@ -13,10 +13,17 @@ from maskrcnn_benchmark.utils import cv2_util
 
 class ChataDemo(object):
     # Chata categories for pretty print
-    CATEGORIES = [
-        "__background__ ",
-        'Chart/Table',
-    ]
+    CATEGORIES = (
+        "__background__",
+        'other_object',
+        'table',
+        'bar_chart',
+        'box_chart',
+        'line_chart',
+        'pie/donat_chart',
+        'scatter_chart',
+        'other_chart',
+    )
 
     def __init__(
         self,
