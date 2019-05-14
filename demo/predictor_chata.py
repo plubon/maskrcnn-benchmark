@@ -34,6 +34,7 @@ class ChataDemo(object):
         min_image_size=224,
     ):
         self.cfg = cfg.clone()
+        cfg.merge_from_list(["MODEL.DEVICE", "cpu"])
         self.model = build_detection_model(cfg)
         self.model.eval()
         self.device = torch.device(cfg.MODEL.DEVICE)
@@ -62,7 +63,7 @@ class ChataDemo(object):
         top_predictions = self.select_top_predictions(predictions)
         labels = top_predictions.get_field("labels").tolist()
         labels = [self.CATEGORIES[i] for i in labels]
-        xmin, ymin, xmax, ymax = top_predictions.bbox._split_into_xyxy()
+        xmin, ymin, xmax, ymax = top_predictions._split_into_xyxy()
         xmin = xmin / top_predictions.size[0]
         xmax = xmax / top_predictions.size[0]
         ymin = ymin / top_predictions.size[1]
