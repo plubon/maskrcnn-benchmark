@@ -9,7 +9,6 @@ dist/
 
 # Training files
 log.txt
-last_checkpoint
 
 # pytorch/python/numpy formats
 *.pth
@@ -35,3 +34,5 @@ last_checkpoint
 /models
 /weights
 /chata_results
+/server/model_**
+/output
