@@ -12,27 +12,32 @@ from maskrcnn_benchmark.utils import cv2_util
 
 
 class ChataDemo(object):
-    # Chata categories for pretty print
-    CATEGORIES = (
-        "__background__",
-        'other_object',
-        'table',
-        'bar_chart',
-        'box_chart',
-        'line_chart',
-        'pie/donat_chart',
-        'scatter_chart',
-        'other_chart',
     )
 
     def __init__(
         self,
         cfg,
+        model_type,
         confidence_threshold=0.7,
         show_mask_heatmaps=False,
         masks_per_dim=2,
         min_image_size=224,
     ):
+        self.model_type = model_type
+        if model_type=="charts":
+            self.CATEGORIES = (
+                "__background__",
+                'other_object',
+                'chart'
+            )
+        elif model_type=="tables":
+            self.CATEGORIES = (
+                "__background__",
+                'table'
+            )
+        else:
+            raise Exception("Unsupported model_type. (either 'charts' or 'tables'")
+        
         self.cfg = cfg.clone()
         cfg.merge_from_list(["MODEL.DEVICE", "cpu"])
         self.model = build_detection_model(cfg)
@@ -100,6 +105,20 @@ class ChataDemo(object):
         )
         return transform
 
+    def apply_filter(self, img):
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        #plt.imshow(img, cmap='gray', vmin=0, vmax=255)
+            
+        threshold, img = cv2.threshold(img, 0, 255, cv2.THRESH_OTSU)
+        #plt.imshow(img, cmap='gray', vmin=0, vmax=255)
+            
+        img = cv2.distanceTransform(img, cv2.DIST_L1, 0)
+        #plt.imshow(img, cmap='gray', vmin=0, vmax=255)
+            
+        img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+        img = img.astype(np.uint8)
+        return img
+
     def run_on_opencv_image(self, image):
         """
         Arguments:
@@ -110,10 +129,16 @@ class ChataDemo(object):
                 of the detection properties can be found in the fields of
                 the BoxList via `prediction.fields()`
         """
+
+        input_image = image.copy()
+
+        if self.model_type == "tables":
+            image = self.apply_filter(image)
+        
         predictions = self.compute_prediction(image)
         top_predictions = self.select_top_predictions(predictions)
 
-        result = image.copy()
+        result = input_image.copy()
         if self.show_mask_heatmaps:
             return self.create_mask_montage(result, top_predictions)
         result = self.overlay_boxes(result, top_predictions)

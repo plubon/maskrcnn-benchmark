@@ -4,6 +4,8 @@ import torch
 import torch.utils.data
 from PIL import Image
 import sys
+import cv2 as cv
+import numpy as np
 
 if sys.version_info[0] == 2:
     import xml.etree.cElementTree as ET
@@ -14,18 +16,6 @@ else:
 from maskrcnn_benchmark.structures.bounding_box import BoxList
 
 class ChataDataset(torch.utils.data.Dataset):
-
-    CLASSES = (
-        "__background__",
-        '0',
-        '1',
-        '2',
-        '3',
-        '4',
-        '5',
-        '6',
-        '7',
-    )
 
     def __init__(self, data_dir, split, use_difficult=False, transforms=None):
         self.root = data_dir
@@ -42,8 +32,17 @@ class ChataDataset(torch.utils.data.Dataset):
         self.ids = [x.strip("\n") for x in self.ids]
         self.id_to_img_map = {k: v for k, v in enumerate(self.ids)}
 
-        cls = ChataDataset.CLASSES
-        self.class_to_ind = dict(zip(cls, range(len(cls))))
+        self.class_to_ind = {
+            "__background__": 0,
+            '0': 1,
+            '1': 1,
+            '2': 2,
+            '3': 2,
+            '4': 2,
+            '5': 2,
+            '6': 2,
+            '7': 2,
+        }
 
     def __getitem__(self, index):
         img_id = self.ids[index]
@@ -245,10 +244,35 @@ class TablesDataset(torch.utils.data.Dataset):
         cls = TablesDataset.CLASSES
         self.class_to_ind = dict(zip(cls, range(len(cls))))
 
+    def apply_filter(self, img):
+        #img = cv.cvtColor(img, cv.COLOR_RGB2GRAY)
+        #plt.imshow(img, cmap='gray', vmin=0, vmax=255)
+            
+        _threshold, img = cv.threshold(img, 0, 255, cv.THRESH_OTSU)
+        #plt.imshow(img, cmap='gray', vmin=0, vmax=255)
+            
+        img = cv.distanceTransform(img, cv.DIST_L1, 0)
+        #plt.imshow(img, cmap='gray', vmin=0, vmax=255)
+            
+        img = cv.cvtColor(img, cv.COLOR_GRAY2BGR)
+        img = img.astype(np.uint8)
+        return img
+
     def __getitem__(self, index):
         img_id = self.ids[index]
-        img = Image.open(self._imgpath % img_id).convert("RGB")
+        
+        img = cv.imread(self._imgpath % img_id, 0)
+        img_path = self._imgpath % img_id
+        if img is None:
+            raise Exception(f"libpng error: Read Error ({img_path})")
 
+        #img = cv.cvtColor(img, cv.COLOR_BGR2RGB)
+        img = self.apply_filter(img)
+        #cv.imwrite('example.png',img)
+        img = Image.fromarray(img, 'RGB')
+
+        #img = Image.open(self._imgpath % img_id).convert("RGB")
+        
         target = self.get_groundtruth(index)
         target = target.clip_to_image(remove_empty=True)
 
