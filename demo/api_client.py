@@ -29,7 +29,7 @@ class ApiClient():
 
     def get_pages(self, id):
         self.connect()
-        self.connection.request('GET', '/api/publications/pages?publication-id='+str(id),
+        self.connection.request('GET', '/api/publications/pages?publication_id='+str(id),
             headers={'Authorization':'Token '+self.token})
         response = self.connection.getresponse().read().decode()
         data = json.loads(response)
@@ -38,9 +38,20 @@ class ApiClient():
             results.append((page['id'], page['image']))
         return results
 
+    def get_new_publications(self):
+        self.connect()
+        self.connection.request('GET', '/api/publications/?annotation_status=0%3Anew&download_status=done&page=2',
+                                           headers={'Authorization':'Token '+self.token})
+        response = self.connection.getresponse().read().decode()
+        data = json.loads(response)
+        ids = []
+        for publication in data['results']:
+            ids.append(publication['id'])
+        return ids
+
     def add_annotation(self, id, annotation):
         self.connect()
-        body = {'page':id, 'data':annotation}
+        body = [{'page':id, 'data':annotation}]
         self.connection.request('POST', '/api/publications/annotations',
             json.dumps(body),
             headers={'Authorization':'Token '+self.token, 'Content-Type':'application/json'}

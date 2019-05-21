@@ -12,7 +12,6 @@ from maskrcnn_benchmark.utils import cv2_util
 
 
 class ChataDemo(object):
-    )
 
     def __init__(
         self,
@@ -64,6 +63,8 @@ class ChataDemo(object):
         self.masks_per_dim = masks_per_dim
 
     def get_predictions(self, image):
+        if self.model_type == "tables":
+            image = self.apply_filter(image)
         predictions = self.compute_prediction(image)
         top_predictions = self.select_top_predictions(predictions)
         labels = top_predictions.get_field("labels").tolist()
