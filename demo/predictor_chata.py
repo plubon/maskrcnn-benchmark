@@ -12,7 +12,6 @@ from maskrcnn_benchmark.utils import cv2_util
 
 
 class ChataDemo(object):
-    )
 
     def __init__(
         self,
@@ -117,7 +116,7 @@ class ChataDemo(object):
                 the BoxList via `prediction.fields()`
         """
 
-        input_image = image.copy()
+        #result = image.copy()
 
         if self.model_type == "tables":
             image = self.apply_filter(image)
@@ -125,17 +124,16 @@ class ChataDemo(object):
         predictions = self.compute_prediction(image)
         top_predictions = self.select_top_predictions(predictions)
 
-        result = input_image.copy()
-        if self.show_mask_heatmaps:
-            return self.create_mask_montage(result, top_predictions)
-        result = self.overlay_boxes(result, top_predictions)
-        if self.cfg.MODEL.MASK_ON:
-            result = self.overlay_mask(result, top_predictions)
-        if self.cfg.MODEL.KEYPOINT_ON:
-            result = self.overlay_keypoints(result, top_predictions)
-        result = self.overlay_class_names(result, top_predictions)
+#        if self.show_mask_heatmaps:
+#            return self.create_mask_montage(result, top_predictions)
+#        result = self.overlay_boxes(result, top_predictions)
+#        if self.cfg.MODEL.MASK_ON:
+#            result = self.overlay_mask(result, top_predictions)
+#        if self.cfg.MODEL.KEYPOINT_ON:
+#            result = self.overlay_keypoints(result, top_predictions)
+#        result = self.overlay_class_names(result, top_predictions)
 
-        return result
+        return None, top_predictions
 
     def compute_prediction(self, original_image):
         """
