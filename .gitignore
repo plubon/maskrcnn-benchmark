@@ -36,3 +36,5 @@ log.txt
 /chata_results
 /server/model_**
 /output
+/charts
+/tables

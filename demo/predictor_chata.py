@@ -38,6 +38,7 @@ class ChataDemo(object):
             raise Exception("Unsupported model_type. (either 'charts' or 'tables'")
         
         self.cfg = cfg.clone()
+        cfg.merge_from_list(["MODEL.DEVICE", "cpu"])
         self.model = build_detection_model(cfg)
         self.model.eval()
         self.device = torch.device(cfg.MODEL.DEVICE)
@@ -60,6 +61,20 @@ class ChataDemo(object):
         self.confidence_threshold = confidence_threshold
         self.show_mask_heatmaps = show_mask_heatmaps
         self.masks_per_dim = masks_per_dim
+
+    def get_predictions(self, image):
+        if self.model_type == "tables":
+            image = self.apply_filter(image)
+        predictions = self.compute_prediction(image)
+        top_predictions = self.select_top_predictions(predictions)
+        labels = top_predictions.get_field("labels").tolist()
+        labels = [self.CATEGORIES[i] for i in labels]
+        xmin, ymin, xmax, ymax = top_predictions._split_into_xyxy()
+        xmin = xmin / top_predictions.size[0]
+        xmax = xmax / top_predictions.size[0]
+        ymin = ymin / top_predictions.size[1]
+        ymax = ymax / top_predictions.size[1]
+        return zip(labels, xmin.tolist(), ymin.tolist(), xmax.tolist(), ymax.tolist())
 
     def build_transform(self):
         """
